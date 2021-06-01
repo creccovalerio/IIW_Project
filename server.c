@@ -175,6 +175,7 @@ typedef struct client_info{
 	t_tmr           *timer_list_client; // puntatore alla lista dei timer dello specifo client
 	t_timid 		*timer_id_list_client; // puntatore alla lista dei timid timer dello specifico client
 	t_sent_pkt      *list_sent_pkt;  //puntatore alla lista dei pkt inviati per ogni client
+	t_timid			shared[MAXDIM];  //memoria in lista di ritrasmissione
 	pthread_t 		upload_tid;  // upload thread ID 
 	int 			var_req; // variabile per gestire richiesta upload
 	int             hs;  //variabile abilitata solo in fae di handshake
@@ -530,7 +531,20 @@ void append_queue(unsigned short num_port, char* ip_address, int num, t_client *
 	new_node->upload_tid = NULL;
 	new_node->scount = 0;
 
-	
+	for(i = 0;i<MAXDIM;i++){
+		memset(&new_node->shared[i].tidp,0,sizeof(new_node->shared[i].tidp));
+	  	memset(&new_node->shared[i].sockfd,0,sizeof(new_node->shared[i].sockfd));
+	  	memset(&new_node->shared[i].id,0,sizeof(new_node->shared[i].id));
+	  	memset(new_node->shared[i].sequence_number,0,sizeof(new_node->shared[i].sequence_number));
+	  	memset(new_node->shared[i].SYNbit,0,sizeof(new_node->shared[i].SYNbit));
+	  	memset(new_node->shared[i].ACKbit,0,sizeof(new_node->shared[i].ACKbit));
+	  	memset(new_node->shared[i].ack_number,0,sizeof(new_node->shared[i].ack_number));
+	  	memset(new_node->shared[i].message,0,sizeof(new_node->shared[i].message));
+	  	memset(new_node->shared[i].operation_no,0,sizeof(new_node->shared[i].operation_no));
+	  	memset(new_node->shared[i].FINbit,0,sizeof(new_node->shared[i].FINbit));
+	  	memset(new_node->shared[i].port,0,sizeof(new_node->shared[i].port));
+	  	memset(new_node->shared[i].size,0,sizeof(new_node->shared[i].size));
+	}
 
 	pthread_attr_t attr;
 	struct sched_param param;
